@@ -38,7 +38,7 @@ descricao,
 preco
 }
 
-// 💾 Inserir no banco
+// 💾 Inserir no banco de dados
 await cds.run(
 INSERT.into('CatalogService.Materiais').entries(novoMaterial)
 )
