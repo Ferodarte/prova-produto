@@ -1,0 +1,23 @@
+<mvc:View
+controllerName="br.com.provaproduto.materiaisui.controller.View1"
+xmlns:mvc="sap.ui.core.mvc"
+xmlns="sap.m">
+<Page title="Materiais">
+<content>
+<VBox class="sapUiSmallMargin">
+<Input id="inpID" placeholder="ID" />
+<Input id="inpNome" placeholder="Nome" />
+<Input id="inpDescricao" placeholder="Descrição" />
+<Input id="inpPreco" placeholder="Preço" type="Number" />
+
+<HBox class="sapUiSmallMarginTop" renderType="Bare">
+<Button text="Criar Material" press=".onCriarMaterial" />
+<Button text="Ler Materiais" press=".onLerMateriais" class="sapUiTinyMarginBegin" />
+</HBox>
+
+<List id="listaMateriais" class="sapUiSmallMarginTop">
+</List>
+</VBox>
+</content>
+</Page>
+</mvc:View>
