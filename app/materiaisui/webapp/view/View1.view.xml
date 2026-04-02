@@ -2,22 +2,36 @@
 controllerName="br.com.provaproduto.materiaisui.controller.View1"
 xmlns:mvc="sap.ui.core.mvc"
 xmlns="sap.m">
-<Page title="Materiais">
-<content>
-<VBox class="sapUiSmallMargin">
-<Input id="inpID" placeholder="ID" />
-<Input id="inpNome" placeholder="Nome" />
-<Input id="inpDescricao" placeholder="Descrição" />
-<Input id="inpPreco" placeholder="Preço" type="Number" />
 
-<HBox class="sapUiSmallMarginTop" renderType="Bare">
-<Button text="Criar Material" press=".onCriarMaterial" />
-<Button text="Ler Materiais" press=".onLerMateriais" class="sapUiTinyMarginBegin" />
+<Page title="Materiais">
+
+<content>
+
+<VBox class="sapUiSmallMargin">
+
+<!-- FILTRO -->
+<Input id="inputQtd" placeholder="Qtd para filtro"/>
+
+<HBox class="sapUiSmallMarginTop">
+<Button text="Criar Material" press="onAbrirDialogCriar"/>
+<Button text="Ler Materiais" press="onLerMateriais"/>
 </HBox>
 
-<List id="listaMateriais" class="sapUiSmallMarginTop">
-</List>
+<!-- TABELA -->
+<Table id="tabelaMateriais" class="sapUiSmallMarginTop">
+
+<columns>
+<Column><Text text="ID"/></Column>
+<Column><Text text="Nome"/></Column>
+<Column><Text text="Descrição"/></Column>
+<Column><Text text="Preço"/></Column>
+</columns>
+
+</Table>
+
 </VBox>
+
 </content>
+
 </Page>
 </mvc:View>

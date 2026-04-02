@@ -1,71 +1,92 @@
 sap.ui.define([
 "sap/ui/core/mvc/Controller",
-"sap/m/MessageToast",
-"sap/m/StandardListItem"
-], function (Controller, MessageToast, StandardListItem) {
+"sap/m/Dialog",
+"sap/m/Input",
+"sap/m/Button",
+"sap/m/VBox",
+"sap/m/Label",
+"sap/m/MessageBox",
+"br/com/provaproduto/materiaisui/handler/MaterialHandler"
+], function (Controller, Dialog, Input, Button, VBox, Label, MessageBox, MaterialHandler) {
 "use strict";
 
 return Controller.extend("br.com.provaproduto.materiaisui.controller.View1", {
-onCriarMaterial: async function () {
-const oView = this.getView();
 
-const sID = oView.byId("inpID").getValue();
-const sNome = oView.byId("inpNome").getValue();
-const sDescricao = oView.byId("inpDescricao").getValue();
-const sPreco = oView.byId("inpPreco").getValue();
-
-try {
-const response = await fetch("/catalog/criarMaterial", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
+onInit: function () {
+this._handler = new MaterialHandler(this);
+this._oDialogCriar = null;
 },
-body: JSON.stringify({
-ID: sID,
-nome: sNome,
-descricao: sDescricao,
-preco: parseFloat(sPreco)
+
+onLerMateriais: function () {
+this._handler.lerMateriais();
+},
+
+onAbrirDialogCriar: function () {
+if (!this._oDialogCriar) {
+this._oDialogCriar = new Dialog({
+title: "Criar Material",
+contentWidth: "400px",
+content: new VBox({
+class: "sapUiSmallMargin",
+items: [
+new Label({ text: "ID" }),
+new Input("dlgId"),
+
+new Label({ text: "Nome" }),
+new Input("dlgNome"),
+
+new Label({ text: "Descrição" }),
+new Input("dlgDescricao"),
+
+new Label({ text: "Preço" }),
+new Input("dlgPreco")
+]
+}),
+beginButton: new Button({
+text: "Salvar",
+press: async function () {
+const dados = {
+ID: sap.ui.getCore().byId("dlgId").getValue(),
+nome: sap.ui.getCore().byId("dlgNome").getValue(),
+descricao: sap.ui.getCore().byId("dlgDescricao").getValue(),
+preco: parseFloat(sap.ui.getCore().byId("dlgPreco").getValue())
+};
+
+if (!dados.ID || !dados.nome || !dados.descricao || isNaN(dados.preco)) {
+MessageBox.warning("Preencha ID, Nome, Descrição e Preço.");
+return;
+}
+
+const criado = await this._handler.criarMaterial(dados);
+
+if (criado) {
+this._oDialogCriar.close();
+
+sap.ui.getCore().byId("dlgId").setValue("");
+sap.ui.getCore().byId("dlgNome").setValue("");
+sap.ui.getCore().byId("dlgDescricao").setValue("");
+sap.ui.getCore().byId("dlgPreco").setValue("");
+}
+}.bind(this)
+}),
+endButton: new Button({
+text: "Cancelar",
+press: function () {
+this._oDialogCriar.close();
+}.bind(this)
 })
 });
 
-const data = await response.json();
-
-if (!response.ok) {
-throw new Error(data.error?.message || "Erro ao criar material");
+this.getView().addDependent(this._oDialogCriar);
 }
 
-MessageToast.show("Material criado com sucesso");
+sap.ui.getCore().byId("dlgId").setValue("");
+sap.ui.getCore().byId("dlgNome").setValue("");
+sap.ui.getCore().byId("dlgDescricao").setValue("");
+sap.ui.getCore().byId("dlgPreco").setValue("");
 
-oView.byId("inpID").setValue("");
-oView.byId("inpNome").setValue("");
-oView.byId("inpDescricao").setValue("");
-oView.byId("inpPreco").setValue("");
-
-this.onLerMateriais();
-} catch (e) {
-MessageToast.show(e.message);
+this._oDialogCriar.open();
 }
-},
 
-onLerMateriais: async function () {
-const oList = this.getView().byId("listaMateriais");
-oList.removeAllItems();
-
-try {
-const response = await fetch("/catalog/Materiais");
-const data = await response.json();
-
-const aResultados = data.value || [];
-
-aResultados.forEach(function (item) {
-oList.addItem(new StandardListItem({
-title: item.ID + " - " + item.nome,
-description: item.descricao + " | Preço: " + item.preco
-}));
-});
-} catch (e) {
-MessageToast.show("Erro ao ler materiais");
-}
-}
 });
 });
